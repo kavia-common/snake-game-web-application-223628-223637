@@ -1,0 +1,32 @@
+:root {
+  /* Ocean Professional basic tokens (will be extended in next step) */
+  --color-primary: #2563EB;
+  --color-secondary: #F59E0B;
+  --color-success: #F59E0B;
+  --color-error: #EF4444;
+
+  --bg: #f9fafb;
+  --surface: #ffffff;
+  --text: #111827;
+
+  --border: rgba(17, 24, 39, 0.08);
+  --muted: rgba(17, 24, 39, 0.6);
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 10px rgba(0,0,0,0.08);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+
+  --transition: 200ms ease-in-out;
+}
+
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --surface: #0b1220;
+  --text: #e5e7eb;
+  --border: rgba(229, 231, 235, 0.12);
+  --muted: rgba(229, 231, 235, 0.7);
+
+  /* Keep primary/secondary consistent */
+}

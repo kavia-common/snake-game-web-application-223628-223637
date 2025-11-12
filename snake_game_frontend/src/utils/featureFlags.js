@@ -57,7 +57,9 @@ export function useFeatureFlags() {
   const defaults = {
     canvasRenderer: true,
     analytics: true,
-    showGridLines: false
+    showGridLines: false,
+    // Auto-pause the game when the tab is hidden (accessibility and courtesy)
+    autoPauseOnBlur: true
   };
 
   const parsed = parseFlags(raw);

@@ -99,7 +99,7 @@
 }
 .u-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
 .u-btn:active { transform: translateY(0); }
-.u-btn:focus-visible { outline: none; box-shadow: var(--ring); }
+.u-btn:focus-visible { outline: 2px solid transparent; box-shadow: var(--ring); }
 
 .u-btn--primary {
   background: linear-gradient(180deg, rgba(37,99,235,0.95), rgba(37,99,235,0.88));

@@ -206,6 +206,19 @@ export function useSnakeGame({
     return undefined;
   }, [loop, status]);
 
+  // Optional auto-pause on tab hidden via feature flag
+  useEffect(() => {
+    function handleVisibility() {
+      if (document.hidden && status === "running" && flags.autoPauseOnBlur) {
+        // Pause only if flag enabled
+        logger.info("auto_pause_visibility_hidden");
+        setStatus("paused");
+      }
+    }
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, [flags.autoPauseOnBlur, status]);
+
   // Keyboard events
   useEffect(() => {
     window.addEventListener("keydown", onKeyDown, { passive: false });

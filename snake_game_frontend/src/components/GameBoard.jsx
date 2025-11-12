@@ -109,8 +109,16 @@ export default function GameBoard({
   }, [snake, food, gridWidth, gridHeight, status, showGrid, flags]);
 
   return (
-    <div className="board-inner" role="img" aria-label="Snake game board">
-      <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block" }} />
+    <div
+      className="board-inner"
+      role="img"
+      aria-label={`Snake game board ${status === "paused" ? "(paused)" : status === "over" ? "(game over)" : ""}`.trim()}
+    >
+      <canvas
+        ref={canvasRef}
+        style={{ width: "100%", height: "100%", display: "block" }}
+        aria-hidden="true"
+      />
       {/* Accessible live region handled in HUD */}
     </div>
   );

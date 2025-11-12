@@ -15,8 +15,8 @@ export default function Controls({
   const isPaused = status === "paused";
 
   return (
-    <footer className="surface controls" aria-label="Game Controls">
-      <div className="buttons">
+    <footer className="surface controls" role="region" aria-label="Game Controls">
+      <div className="buttons" role="group" aria-label="Primary actions">
         {isIdle && (
           <button className="btn u-btn u-btn--primary" onClick={onStart} aria-label="Start game">
             Start
@@ -39,7 +39,7 @@ export default function Controls({
         )}
       </div>
 
-      <div className="dpad" aria-label="Directional pad">
+      <div className="dpad" role="group" aria-label="Directional pad">
         <button
           className="pad-btn"
           style={{ gridArea: "up" }}

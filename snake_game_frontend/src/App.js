@@ -5,6 +5,7 @@ import GameBoard from "./components/GameBoard";
 import GameHUD from "./components/GameHUD";
 import Controls from "./components/Controls";
 import { useSnakeGame } from "./hooks/useSnakeGame";
+import { useFeatureFlags } from "./utils/featureFlags";
 
 // PUBLIC_INTERFACE
 function App() {
@@ -27,25 +28,28 @@ function App() {
     setDirection
   } = useSnakeGame();
 
+  const { flags } = useFeatureFlags();
+
   const toggleTheme = () => setTheme(prev => (prev === "light" ? "dark" : "light"));
 
   return (
     <div className="App">
-      <div className="game-shell">
+      <main className="game-shell" role="main" aria-label="Snake game">
         <GameHUD score={score} highScore={highScore} status={status} speedMs={speedMs} />
 
-        <div className="surface board-wrap">
+        <section className="surface board-wrap" aria-label="Game board section">
           <div style={{ display: "flex", justifyContent: "flex-end", padding: "0 2px 10px" }}>
             <button
               className="theme-toggle u-btn u-btn--ghost"
               onClick={toggleTheme}
               aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+              title={`Toggle ${theme === "light" ? "dark" : "light"} theme`}
             >
               {theme === "light" ? "🌙 Dark" : "☀️ Light"}
             </button>
           </div>
-          <GameBoard snake={snake} food={food} status={status} />
-        </div>
+          <GameBoard snake={snake} food={food} status={status} showGrid={Boolean(flags.showGridLines)} />
+        </section>
 
         <Controls
           status={status}
@@ -54,7 +58,7 @@ function App() {
           onRestart={restart}
           onDirection={setDirection}
         />
-      </div>
+      </main>
     </div>
   );
 }

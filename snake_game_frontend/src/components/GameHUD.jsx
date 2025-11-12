@@ -4,7 +4,12 @@ import React from "react";
 export default function GameHUD({ score, highScore, status, speedMs }) {
   /** Displays score, high score, and status badges. Includes aria-live region for screen readers. */
   return (
-    <header className="surface hud" aria-label="Game Heads-up Display">
+    <header
+      className="surface hud"
+      role="region"
+      aria-label="Game Heads-up Display"
+      tabIndex={-1}
+    >
       <div className="hud-left">
         <div className="stat" aria-label={`Score ${score}`}>
           {score}
@@ -16,8 +21,12 @@ export default function GameHUD({ score, highScore, status, speedMs }) {
         </div>
       </div>
       <div className="hud-right">
-        <span className="badge u-badge" aria-label={`Status ${status}`}>{status}</span>
-        <span className="badge u-badge" title="Current tick speed">{speedMs}ms</span>
+        <span className="badge u-badge" aria-label={`Status ${status}`} aria-live="polite">
+          {status}
+        </span>
+        <span className="badge u-badge" title="Current tick speed" aria-label={`Speed ${speedMs} milliseconds`}>
+          {speedMs}ms
+        </span>
       </div>
       <div className="visually-hidden" aria-live="polite" aria-atomic="true">
         Score {score}. High score {highScore}. Status {status}.

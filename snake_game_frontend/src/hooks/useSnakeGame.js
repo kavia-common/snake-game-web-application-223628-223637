@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GRID_WIDTH, GRID_HEIGHT, INITIAL_SPEED_MS, SPEED_STEP } from "../constants/gameConfig";
 import { logger } from "../utils/logger";
+import { useTelemetry } from "../utils/telemetry";
 
 const KEY_TO_DIR = {
   ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right",
@@ -55,6 +56,9 @@ export function useSnakeGame({
   const lastTickRef = useRef(0);
   const rafRef = useRef(0);
 
+  // Telemetry hooks (respects env flags and backend availability)
+  const { emit, flags } = useTelemetry();
+
   const resetGame = useCallback(() => {
     setSnake([{ x: Math.floor(gridWidth / 2), y: Math.floor(gridHeight / 2) }]);
     setDirection("right");
@@ -69,28 +73,35 @@ export function useSnakeGame({
     resetGame();
     setStatus("running");
     logger.info("game_start", { speedMs: INITIAL_SPEED_MS });
-  }, [resetGame, status]);
+    emit("game_start", { speedMs: INITIAL_SPEED_MS, flags });
+  }, [emit, flags, resetGame, status]);
 
   const pauseResume = useCallback(() => {
     setStatus(prev => {
       const next = prev === "running" ? "paused" : (prev === "paused" ? "running" : prev);
       logger.info("game_toggle_pause", { from: prev, to: next });
+      emit("game_toggle_pause", { from: prev, to: next });
       return next;
     });
-  }, []);
+  }, [emit]);
 
   const restart = useCallback(() => {
     resetGame();
     setStatus("running");
     logger.info("game_restart");
-  }, [resetGame]);
+    emit("game_restart");
+  }, [emit, resetGame]);
 
   const setDirectionSafe = useCallback((dir) => {
     setNextDirection((curr) => {
-      if (isOpposite(dir, direction)) return curr; // prevent reversing directly
+      if (isOpposite(dir, direction)) {
+        emit("input_direction_blocked", { attempted: dir, current: direction });
+        return curr; // prevent reversing directly
+      }
+      emit("input_direction", { to: dir, from: direction });
       return dir;
     });
-  }, [direction]);
+  }, [direction, emit]);
 
   const onKeyDown = useCallback((e) => {
     const key = e.key;
@@ -99,6 +110,7 @@ export function useSnakeGame({
       setDirectionSafe(KEY_TO_DIR[key]);
     } else if (key === " " || key === "Spacebar") {
       e.preventDefault();
+      emit("input_key", { key: "Space" });
       if (status === "idle") {
         start();
       } else {
@@ -106,9 +118,10 @@ export function useSnakeGame({
       }
     } else if (key === "Enter" && status === "over") {
       e.preventDefault();
+      emit("input_key", { key: "Enter" });
       restart();
     }
-  }, [pauseResume, restart, setDirectionSafe, start, status]);
+  }, [emit, pauseResume, restart, setDirectionSafe, start, status]);
 
   // Movement tick
   const tick = useCallback(() => {
@@ -124,6 +137,7 @@ export function useSnakeGame({
       // Wall collision
       if (newHead.x < 0 || newHead.x >= gridWidth || newHead.y < 0 || newHead.y >= gridHeight) {
         logger.warn("collision_wall", { head: newHead });
+        emit("game_over", { reason: "wall", score, highScore });
         setStatus("over");
         if (score > highScore) {
           localStorage.setItem("highScore", String(score));
@@ -135,6 +149,7 @@ export function useSnakeGame({
       // Self collision
       if (prev.some(seg => seg.x === newHead.x && seg.y === newHead.y)) {
         logger.warn("collision_self", { head: newHead });
+        emit("game_over", { reason: "self", score, highScore });
         setStatus("over");
         if (score > highScore) {
           localStorage.setItem("highScore", String(score));
@@ -149,10 +164,13 @@ export function useSnakeGame({
           grow = true;
           const newScore = score + 1;
           setScore(newScore);
+          emit("food_eaten", { newScore });
           // Increase speed slightly every 3 foods
           if (newScore % 3 === 0) {
             setSpeedMs(s => Math.max(50, s - SPEED_STEP));
-            logger.info("level_up", { newScore, speedMs: Math.max(50, speedMs - SPEED_STEP) });
+            const nextSpeed = Math.max(50, speedMs - SPEED_STEP);
+            logger.info("level_up", { newScore, speedMs: nextSpeed });
+            emit("level_up", { score: newScore, speedMs: nextSpeed });
           }
           return randomFood([newHead, ...prev], gridWidth, gridHeight);
         }
@@ -172,6 +190,9 @@ export function useSnakeGame({
     const delta = ts - lastTickRef.current;
     if (delta >= speedMs) {
       lastTickRef.current = ts;
+      if (flags.analytics && (flags.emitTickEvents === true)) {
+        emit("game_tick", { delta, speedMs });
+      }
       tick();
     }
     rafRef.current = requestAnimationFrame(loop);

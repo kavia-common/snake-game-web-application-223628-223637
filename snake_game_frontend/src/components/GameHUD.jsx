@@ -16,8 +16,8 @@ export default function GameHUD({ score, highScore, status, speedMs }) {
         </div>
       </div>
       <div className="hud-right">
-        <span className="badge" aria-label={`Status ${status}`}>{status}</span>
-        <span className="badge" title="Current tick speed">{speedMs}ms</span>
+        <span className="badge u-badge" aria-label={`Status ${status}`}>{status}</span>
+        <span className="badge u-badge" title="Current tick speed">{speedMs}ms</span>
       </div>
       <div className="visually-hidden" aria-live="polite" aria-atomic="true">
         Score {score}. High score {highScore}. Status {status}.

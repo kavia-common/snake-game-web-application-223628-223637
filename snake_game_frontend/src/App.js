@@ -37,7 +37,7 @@ function App() {
         <div className="surface board-wrap">
           <div style={{ display: "flex", justifyContent: "flex-end", padding: "0 2px 10px" }}>
             <button
-              className="theme-toggle"
+              className="theme-toggle u-btn u-btn--ghost"
               onClick={toggleTheme}
               aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
             >

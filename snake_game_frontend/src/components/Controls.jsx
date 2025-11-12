@@ -18,22 +18,22 @@ export default function Controls({
     <footer className="surface controls" aria-label="Game Controls">
       <div className="buttons">
         {isIdle && (
-          <button className="btn primary" onClick={onStart} aria-label="Start game">
+          <button className="btn u-btn u-btn--primary" onClick={onStart} aria-label="Start game">
             Start
           </button>
         )}
         {isRunning && (
-          <button className="btn" onClick={onPauseResume} aria-label="Pause game">
+          <button className="btn u-btn" onClick={onPauseResume} aria-label="Pause game">
             Pause
           </button>
         )}
         {isPaused && (
-          <button className="btn" onClick={onPauseResume} aria-label="Resume game">
+          <button className="btn u-btn" onClick={onPauseResume} aria-label="Resume game">
             Resume
           </button>
         )}
         {(isOver || isPaused || isRunning) && (
-          <button className="btn warn" onClick={onRestart} aria-label="Restart game">
+          <button className="btn u-btn u-btn--warn" onClick={onRestart} aria-label="Restart game">
             Restart
           </button>
         )}

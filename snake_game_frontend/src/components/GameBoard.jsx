@@ -12,7 +12,10 @@ export default function GameBoard({
   showGrid = false,
   onCanvasReady
 }) {
-  /** Canvas-based renderer. Computes cell size, draws grid optionally, snake and food. */
+  /**
+   * Canvas-based renderer. Uses Ocean Professional tokens via CSS for container;
+   * this component focuses only on draw logic and responsiveness.
+   */
   const canvasRef = useRef(null);
   const { flags } = useFeatureFlags();
 
